@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>견적 문의 — 4DMIXX(포디믹스)</title>
+<meta name="description" content="4DMIXX에 3D프린팅, 프로토타입, 사출, CNC, 레이저 커팅 견적을 문의하세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo"><span class="four">4</span>DMIXX</a>
+    <nav class="nav">
+      <a href="index.html">홈</a>
+      <a href="services.html">서비스</a>
+      <a href="portfolio.html">작업사례</a>
+      <a href="contact.html" class="active">문의</a>
+    </nav>
+    <a href="contact.html" class="btn btn-primary">견적 문의</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">문의</div>
+    <h1>견적, 5분이면 보내드립니다</h1>
+    <p>도면·참고 이미지가 있다면 함께 알려주세요. 없어도 괜찮습니다 — 상담을 통해 함께 정리해 드립니다.</p>
+  </div>
+</section>
+
+<section style="border-bottom:none;">
+  <div class="wrap contact-grid">
+    <div>
+      <div class="info-block">
+        <span class="k">위치</span>
+        <span class="v">대전광역시 유성구 [상세주소 입력]</span>
+      </div>
+      <div class="info-block">
+        <span class="k">전화</span>
+        <a href="tel:0000000000" class="v">[전화번호 입력]</a>
+      </div>
+      <div class="info-block">
+        <span class="k">이메일</span>
+        <a href="mailto:contact@4dmixx.com" class="v">contact@4dmixx.com</a>
+      </div>
+      <div class="info-block">
+        <span class="k">운영시간</span>
+        <span class="v">평일 09:00 – 18:00</span>
+      </div>
+      <div class="info-block">
+        <span class="k">보유 공정</span>
+        <div class="tag-row" style="margin-top:8px;">
+          <span class="spec-tag">3D프린팅</span>
+          <span class="spec-tag metal">CNC</span>
+          <span class="spec-tag metal">사출금형</span>
+          <span class="spec-tag laser">레이저커팅</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <form id="quote-form">
+        <div class="form-row">
+          <div>
+            <label for="name">이름 / 회사명</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div>
+            <label for="phone">연락처</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+        </div>
+        <div>
+          <label for="email">이메일</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+          <label for="process">문의 유형</label>
+          <select id="process" name="process">
+            <option value="3d-printing">3D프린팅</option>
+            <option value="prototype">프로토타입 제작</option>
+            <option value="injection">사출금형</option>
+            <option value="cnc">CNC 가공</option>
+            <option value="laser">레이저 커팅</option>
+            <option value="unsure">잘 모르겠음 / 상담 필요</option>
+          </select>
+        </div>
+        <div>
+          <label for="message">문의 내용</label>
+          <textarea id="message" name="message" placeholder="재질, 수량, 희망 납기 등을 함께 적어주시면 더 정확한 견적이 가능합니다." required></textarea>
+        </div>
+        <p class="form-note">※ 도면·이미지 파일은 이메일(contact@4dmixx.com)로 함께 보내주세요.</p>
+        <button type="submit" class="btn btn-primary form-submit">문의 보내기</button>
+        <p class="form-status" id="form-status"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-left">© 2026 4DMIXX. 대전광역시 유성구</div>
+    <nav>
+      <a href="services.html">서비스</a>
+      <a href="portfolio.html">작업사례</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// 3D 자동견적에서 넘어온 경우 견적 요약을 문의 내용에 자동 입력
+(function(){
+  const summary = sessionStorage.getItem("quoteSummary");
+  if (summary && location.search.includes("from=quote")) {
+    const msg = document.getElementById("message");
+    const proc = document.getElementById("process");
+    if (msg) msg.value = summary;
+    if (proc) proc.value = "3d-printing";
+    sessionStorage.removeItem("quoteSummary");
+  }
+})();
+</script>
+</body>
+</html>
