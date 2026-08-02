@@ -81,15 +81,15 @@
             <span class="spec-tag">.STL</span>
             <span class="spec-tag metal">.OBJ</span>
           </div>
-          <button class="btn btn-primary" id="upload-btn" type="button">파일 선택</button>
+          <label for="file-input" class="btn btn-primary" id="upload-btn" style="cursor:pointer;">파일 선택</label>
         </div>
         <div class="viewer-toolbar">
           <span class="file-name" id="file-name">파일 없음</span>
           <div class="tools">
-            <button class="tool-btn" id="reupload-btn" type="button">다른 파일</button>
+            <label for="file-input" class="tool-btn" id="reupload-btn" style="cursor:pointer; display:inline-block;">다른 파일</label>
           </div>
         </div>
-        <input type="file" id="file-input" hidden>
+        <input type="file" id="file-input" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;">
       </div>
 
       <div class="quote-panel">

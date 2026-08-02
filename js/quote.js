@@ -415,8 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const dropzone = document.getElementById("viewer-empty");
   const panel = document.querySelector(".viewer-panel");
 
-  document.getElementById("upload-btn").addEventListener("click", () => fileInput.click());
-  document.getElementById("reupload-btn").addEventListener("click", () => fileInput.click());
+  // 파일 선택은 label(for="file-input")이 네이티브로 처리 — JS click() 불필요
   fileInput.addEventListener("change", () => {
     if (fileInput.files.length) parseFile(fileInput.files[0]);
     fileInput.value = "";
