@@ -153,7 +153,7 @@ function parseFile(file) {
       } else if (ext === "obj") {
         geometry = parseOBJ(new TextDecoder().decode(e.target.result));
       } else {
-        throw new Error("지원하지 않는 형식입니다. STL 또는 OBJ 파일을 올려주세요.");
+        throw new Error(`'.${ext}' 형식은 지원하지 않습니다. STL 또는 OBJ 파일을 올려주세요.`);
       }
       onGeometryLoaded(geometry, file.name);
     } catch (err) {
