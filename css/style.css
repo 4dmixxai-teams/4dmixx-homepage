@@ -627,3 +627,16 @@ footer nav a:hover{ color:var(--text); }
   .vc-facts,.vc-services{grid-template-columns:1fr;}
   .vc-steps{grid-template-columns:1fr 1fr;}
 }
+
+.vc-history{margin-top:38px; overflow-x:auto;}
+.vc-history table{width:100%; border-collapse:collapse; font-size:13px;}
+.vc-history th{
+  text-align:left; padding:11px 14px; background:var(--surface-2);
+  border-bottom:1px solid var(--line-strong, var(--line));
+  font-family:var(--font-mono); font-size:11px; letter-spacing:1px; color:var(--text-dim);
+}
+.vc-history td{padding:11px 14px; border-bottom:1px solid var(--line); color:var(--text-dim);}
+.vc-history td:first-child{font-family:var(--font-mono); color:var(--laser);}
+.vc-history td:nth-child(3){font-family:var(--font-mono); color:var(--text);}
+.vc-history tr:hover td{background:var(--surface-2);}
+@media (max-width:640px){ .vc-history table{font-size:11.5px;} .vc-history td,.vc-history th{padding:8px 8px;} }
