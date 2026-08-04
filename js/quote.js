@@ -330,8 +330,17 @@ function refreshUI() {
   const perUnitEl = document.getElementById("price-per-unit");
   if (q) {
     priceEl.innerHTML = `${fmt(q.total, 0)}<span class="won"> 원</span>`;
-    let sub = `1개당 약 ${fmt(q.unitPrice, 0)}원`;
-    if (q.discountRate > 0) sub += ` · 수량할인 ${q.discountRate * 100}% 적용`;
+    // 개당 단가는 관리자(admin.html 인증 세션)에게만 노출 — 원가 역산 방지
+    const isAdmin = sessionStorage.getItem('adm') === '1';
+    let sub = '';
+    if (isAdmin) {
+      sub = `[관리자] 1개당 약 ${fmt(q.unitPrice, 0)}원`;
+      if (q.discountRate > 0) sub += ` · 수량할인 ${q.discountRate * 100}% 적용`;
+    } else if (q.discountRate > 0) {
+      sub = `수량할인 ${q.discountRate * 100}% 적용됨`;
+    } else {
+      sub = `부가세 별도 · 소재/후가공에 따라 변동될 수 있습니다`;
+    }
     perUnitEl.textContent = sub;
   } else {
     priceEl.innerHTML = `—<span class="won"> 원</span>`;
