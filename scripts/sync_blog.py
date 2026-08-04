@@ -52,7 +52,9 @@ def og_image(post_url: str) -> str | None:
             SYNC_LOG.append(f"no-og {post_url} (html {len(html)}b)")
             return None
         img = mm.group(1).replace("&amp;", "&")
-        img = re.sub(r"\?type=w\d+", "?type=w773", img)
+        # postfiles 서버만 고해상도 파라미터 지원 — blogthumb는 원본 그대로
+        if "postfiles.pstatic.net" in img:
+            img = re.sub(r"\?type=w\d+", "?type=w773", img)
         return img
     except Exception as e:
         SYNC_LOG.append(f"err {post_url}: {type(e).__name__} {e}")
