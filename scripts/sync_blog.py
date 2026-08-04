@@ -21,7 +21,7 @@ BLOG_ID = "4dmixx"
 RSS_URL = f"https://rss.blog.naver.com/{BLOG_ID}.xml"
 MAX_POSTS = 12
 OUT_DIR = Path(__file__).parent.parent / "assets" / "blog"
-UA = {"User-Agent": "Mozilla/5.0 (compatible; 4dmixx-homepage-sync)"}
+UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"}
 
 
 def fetch(url: str) -> bytes:
@@ -30,24 +30,29 @@ def fetch(url: str) -> bytes:
         return r.read()
 
 
+SYNC_LOG = []
+
 def og_image(post_url: str) -> str | None:
-    """글 페이지에서 대표 이미지(og:image) 추출 — 모바일 페이지 사용(iframe 없음)"""
+    """PostView 정적 페이지에서 og:image 추출 (iframe/JS 불필요)"""
     try:
-        mobile = post_url.replace("blog.naver.com", "m.blog.naver.com")
-        html = fetch(mobile).decode("utf-8", "ignore")
-        m = re.search(r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)', html)
-        if not m:
-            m = re.search(r'content=["\']([^"\']+)["\'][^>]*property=["\']og:image', html)
-        if not m:  # 본문 첫 이미지 폴백
-            m = re.search(r'(https://postfiles\.pstatic\.net/[^"\'\s]+)', html)
-        if not m:
+        m = re.search(r"blog\.naver\.com/([^/]+)/(\d+)", post_url)
+        if m:
+            url = f"https://blog.naver.com/PostView.naver?blogId={m.group(1)}&logNo={m.group(2)}"
+        else:
+            url = post_url.replace("blog.naver.com", "m.blog.naver.com")
+        html = fetch(url).decode("utf-8", "ignore")
+        mm = re.search(r'og:image"[^>]*content="([^"]+)"', html) or \
+             re.search(r'content="([^"]+)"[^>]*og:image', html) or \
+             re.search(r'(https://postfiles\.pstatic\.net/[^"\s<>]+)', html) or \
+             re.search(r'(https://blogfiles\.pstatic\.net/[^"\s<>]+)', html)
+        if not mm:
+            SYNC_LOG.append(f"no-og {post_url} (html {len(html)}b)")
             return None
-        url = m.group(1).replace("&amp;", "&")
-        # 고해상도 파라미터로 교체
-        url = re.sub(r"\?type=w\d+", "?type=w773", url)
-        return url
+        img = mm.group(1).replace("&amp;", "&")
+        img = re.sub(r"\?type=w\d+", "?type=w773", img)
+        return img
     except Exception as e:
-        print("  og:image 실패:", e)
+        SYNC_LOG.append(f"err {post_url}: {type(e).__name__} {e}")
         return None
 
 
@@ -90,6 +95,7 @@ def main():
 
     (OUT_DIR / "posts.json").write_text(
         json.dumps(posts, ensure_ascii=False, indent=1), encoding="utf-8")
+    (OUT_DIR / "_sync_log.txt").write_text("\n".join(SYNC_LOG) or "all-ok", encoding="utf-8")
     print("posts.json 저장 완료")
 
 
