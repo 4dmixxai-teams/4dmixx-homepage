@@ -569,3 +569,13 @@ footer nav a:hover{ color:var(--text); }
 }
 @media (max-width:640px){ .blog-grid{grid-template-columns:1fr 1fr; gap:10px;} .blog-body{padding:11px;} .blog-body p{display:none;} }
 .blog-more{text-align:center;margin-top:30px;}
+
+.blog-more{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  background:var(--surface-2); border:1.5px dashed var(--line);
+  text-decoration:none; color:var(--text-dim); min-height:180px;
+  transition:border-color .15s, color .15s;
+}
+.blog-more:hover{border-color:var(--laser); color:var(--laser);}
+.blog-more span{font-size:14px; font-weight:600;}
+.blog-more small{font-family:var(--font-mono); font-size:10.5px; letter-spacing:1px;}

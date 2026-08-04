@@ -213,7 +213,11 @@ fetch('assets/blog/posts.json').then(r=>r.ok?r.json():[]).then(posts=>{
         <h3>${p.title}</h3>
         <p>${p.desc}</p>
       </div>
-    </a>`).join('');
+    </a>`).join('') + `
+    <a class="blog-more" href="https://blog.naver.com/4dmixx" target="_blank" rel="noopener">
+      <span>더 많은 작업기 보기</span>
+      <small>네이버 블로그 →</small>
+    </a>`;
 }).catch(()=>{ document.querySelector('.blog-section').style.display='none'; });
 </script>
 
