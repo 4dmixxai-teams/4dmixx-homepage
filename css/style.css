@@ -640,3 +640,25 @@ footer nav a:hover{ color:var(--text); }
 .vc-history td:nth-child(3){font-family:var(--font-mono); color:var(--text);}
 .vc-history tr:hover td{background:var(--surface-2);}
 @media (max-width:640px){ .vc-history table{font-size:11.5px;} .vc-history td,.vc-history th{padding:8px 8px;} }
+
+/* ══════════ 신뢰 지표 밴드 ══════════ */
+.stats-band{
+  background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:44px 0;
+}
+.stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+.stat{text-align:center;}
+.stat-num{
+  font-family:var(--font-display); font-size:38px; font-weight:700; color:var(--accent);
+  display:block; line-height:1.1;
+}
+.stat-num small{font-size:16px; color:var(--text-dim); font-weight:500; margin-left:2px;}
+.stat-num-sm{
+  font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--text);
+  display:block; line-height:1.35; padding-top:4px;
+}
+.stat-label{font-size:12.5px; color:var(--text-dim); display:block; margin-top:10px;}
+@media (max-width:860px){
+  .stats-grid{grid-template-columns:1fr 1fr; gap:26px 12px;}
+  .stat-num{font-size:30px;}
+}
