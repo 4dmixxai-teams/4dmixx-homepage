@@ -9,12 +9,14 @@
 // ------------------------------------------------------------
 // [설정] 견적 단가 — 4DMIXX 내부 기준으로 자유롭게 수정하세요
 // ------------------------------------------------------------
+// 과금 방식: 출력 시간(장비 가동시간) × 시간당 단가 — 4DMIXX 실단가
 const PRICING = {
   materials: {
-    pla:   { name: "PLA",       density: 1.24, pricePerGram: 150,  speedFactor: 1.0 },  // g/cm3, 원/g
-    abs:   { name: "ABS",       density: 1.04, pricePerGram: 180,  speedFactor: 1.1 },
-    petg:  { name: "PETG",      density: 1.27, pricePerGram: 200,  speedFactor: 1.15 },
-    resin: { name: "레진(SLA)", density: 1.15, pricePerGram: 350,  speedFactor: 1.6 },
+    pla:   { name: "PLA",          density: 1.24, hourlyRate: 6000,  speedFactor: 1.0 },
+    abs:   { name: "ABS",          density: 1.04, hourlyRate: 6000,  speedFactor: 1.1 },
+    petg:  { name: "PETG",         density: 1.27, hourlyRate: 8000,  speedFactor: 1.15 },
+    tpu:   { name: "고무(TPU/TPE)", density: 1.21, hourlyRate: 6000,  speedFactor: 1.35 }, // 연질은 저속 출력
+    resin: { name: "레진(SLA)",     density: 1.15, hourlyRate: 12000, speedFactor: 1.6 },  // 시장가 기준 제안값
   },
   infill: {
     // 실제 재료 사용률 근사치 (쉘 포함)
@@ -22,14 +24,9 @@ const PRICING = {
     50:  0.60,
     100: 1.00,
   },
-  baseFee: 5000,            // 기본 셋업비 (원)
-  machineRatePerHour: 3000, // 장비 가동비 (원/시간)
   printSpeedCm3PerHour: 15, // 기준 출력 속도 (cm3/시간, FDM 기준)
-  minPrice: 8000,           // 최소 주문 금액
-  qtyDiscount: [            // 수량 할인
-    { min: 10, rate: 0.10 },
-    { min: 5,  rate: 0.05 },
-  ],
+  bulkQty: 10,              // 이 수량 이상은 업체 문의
+  bulkAmount: 1000000,      // 이 금액 이상은 업체 문의
   maxSizeMm: 300,           // 출력 가능 최대 크기 (한 변 기준)
 };
 
@@ -288,25 +285,19 @@ function calcQuote() {
 
   const usedVolumeCm3 = state.volumeCm3 * infillFactor;
   const weightG = usedVolumeCm3 * mat.density;
-  const materialCost = weightG * mat.pricePerGram;
 
+  // 시간당 과금: 출력시간 × 소재별 시간당 단가
   const printHours = (usedVolumeCm3 / PRICING.printSpeedCm3PerHour) * mat.speedFactor;
-  const machineCost = printHours * PRICING.machineRatePerHour;
+  let unitPrice = printHours * mat.hourlyRate;
+  let total = unitPrice * state.qty;
 
-  let unitPrice = materialCost + machineCost;
-  let total = PRICING.baseFee + unitPrice * state.qty;
-
-  // 수량 할인
-  let discountRate = 0;
-  for (const d of PRICING.qtyDiscount) {
-    if (state.qty >= d.min) { discountRate = d.rate; break; }
-  }
-  total *= (1 - discountRate);
-  total = Math.max(total, PRICING.minPrice);
+  // 대량 주문 → 업체 문의 안내
+  const bulk = state.qty >= PRICING.bulkQty || total >= PRICING.bulkAmount;
+  const discountRate = 0;
   total = Math.round(total / 100) * 100; // 백원 단위 반올림
 
   return {
-    weightG, printHours, unitPrice, total, discountRate,
+    weightG, printHours, unitPrice, total, discountRate, bulk,
     oversize: Math.max(state.bbox.x, state.bbox.y, state.bbox.z) > PRICING.maxSizeMm,
   };
 }
@@ -336,8 +327,8 @@ function refreshUI() {
     if (isAdmin) {
       sub = `[관리자] 1개당 약 ${fmt(q.unitPrice, 0)}원`;
       if (q.discountRate > 0) sub += ` · 수량할인 ${q.discountRate * 100}% 적용`;
-    } else if (q.discountRate > 0) {
-      sub = `수량할인 ${q.discountRate * 100}% 적용됨`;
+    } else if (q.bulk) {
+      sub = `10개 이상·100만원 이상 대량 주문은 별도 할인 견적 — 문의 주세요`;
     } else {
       sub = `부가세 별도 · 소재/후가공에 따라 변동될 수 있습니다`;
     }
