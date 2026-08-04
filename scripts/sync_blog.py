@@ -19,8 +19,8 @@ from PIL import Image
 
 BLOG_ID = "4dmixx"
 RSS_URL = f"https://rss.blog.naver.com/{BLOG_ID}.xml"
-MAX_POSTS = 12
-FETCH_POSTS = 40  # 필터 후 12개를 채우기 위해 넉넉히 조회
+MAX_POSTS = 96
+FETCH_POSTS = 200  # 필터 후 12개를 채우기 위해 넉넉히 조회
 INCLUDE_KW = ["디오라마", "모형", "시제품", "전시"]
 EXCLUDE_KW = ["이슈"]
 OUT_DIR = Path(__file__).parent.parent / "assets" / "blog"

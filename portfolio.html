@@ -39,14 +39,39 @@
       <h2>블로그 최신 작업기</h2>
       <p>실제 제작 과정과 뒷이야기를 네이버 블로그에 기록합니다. 카드를 누르면 글로 이동합니다.</p>
     </div>
+    <div class="blog-search">
+      <input type="search" id="blogSearch" placeholder="작업기 검색 — 예: 디오라마, 교각, 선박...">
+      <span class="blog-count" id="blogCount"></span>
+    </div>
     <div class="blog-grid" id="blogGrid"></div>
+    <div class="blog-pager" id="blogPager"></div>
   </div>
 </section>
 
 <script>
+let BLOG = {posts: [], filtered: [], page: 1, per: 12};
+
 fetch('assets/blog/posts.json?v=' + Date.now()).then(r=>r.ok?r.json():[]).then(posts=>{
   if(!posts.length){ document.querySelector('.blog-section').style.display='none'; return; }
-  document.getElementById('blogGrid').innerHTML = posts.map(p=>`
+  BLOG.posts = posts;
+  BLOG.filtered = posts;
+  renderBlog();
+  document.getElementById('blogSearch').addEventListener('input', e=>{
+    const q = e.target.value.trim().toLowerCase();
+    BLOG.filtered = q ? BLOG.posts.filter(p=>(p.title+' '+p.desc).toLowerCase().includes(q)) : BLOG.posts;
+    BLOG.page = 1;
+    renderBlog();
+  });
+}).catch(()=>{ document.querySelector('.blog-section').style.display='none'; });
+
+function renderBlog(){
+  const {filtered, page, per} = BLOG;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / per));
+  BLOG.page = Math.min(page, totalPages);
+  const slice = filtered.slice((BLOG.page-1)*per, BLOG.page*per);
+
+  document.getElementById('blogCount').textContent = filtered.length + '건';
+  document.getElementById('blogGrid').innerHTML = slice.length ? slice.map(p=>`
     <a class="blog-card" href="${p.link}" target="_blank" rel="noopener">
       ${p.img?`<div class="blog-thumb" style="background-image:url('${p.img}')"></div>`:''}
       <div class="blog-body">
@@ -54,8 +79,24 @@ fetch('assets/blog/posts.json?v=' + Date.now()).then(r=>r.ok?r.json():[]).then(p
         <h3>${p.title}</h3>
         <p>${p.desc}</p>
       </div>
-    </a>`).join('');
-}).catch(()=>{ document.querySelector('.blog-section').style.display='none'; });
+    </a>`).join('') : '<p style="color:var(--text-dim);font-size:13px;grid-column:1/-1;">검색 결과가 없습니다.</p>';
+
+  // 페이지 버튼
+  let pager = '';
+  if(totalPages > 1){
+    pager += `<button class="pg-btn" ${BLOG.page===1?'disabled':''} onclick="goPage(${BLOG.page-1})">‹</button>`;
+    for(let i=1;i<=totalPages;i++){
+      pager += `<button class="pg-btn ${i===BLOG.page?'cur':''}" onclick="goPage(${i})">${i}</button>`;
+    }
+    pager += `<button class="pg-btn" ${BLOG.page===totalPages?'disabled':''} onclick="goPage(${BLOG.page+1})">›</button>`;
+  }
+  document.getElementById('blogPager').innerHTML = pager;
+}
+function goPage(p){
+  BLOG.page = p;
+  renderBlog();
+  document.querySelector('.blog-section').scrollIntoView({behavior:'smooth'});
+}
 </script>
 
 <section style="border-bottom:none;">

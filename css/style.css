@@ -568,3 +568,24 @@ footer nav a:hover{ color:var(--text); }
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 @media (max-width:640px){ .blog-grid{grid-template-columns:1fr 1fr; gap:10px;} .blog-body{padding:11px;} .blog-body p{display:none;} }
+
+/* 블로그 검색 + 페이지네이션 */
+.blog-search{
+  display:flex; align-items:center; gap:12px; margin-top:26px;
+}
+.blog-search input{
+  flex:1; max-width:380px; padding:11px 14px;
+  background:var(--surface); border:1px solid var(--line); color:var(--text);
+  font-family:var(--font-body); font-size:13.5px; outline:none;
+}
+.blog-search input:focus{border-color:var(--laser);}
+.blog-count{font-family:var(--font-mono); font-size:11.5px; color:var(--metal);}
+.blog-pager{display:flex; justify-content:center; gap:6px; margin-top:28px; flex-wrap:wrap;}
+.pg-btn{
+  min-width:34px; height:34px; padding:0 8px;
+  background:var(--surface); border:1px solid var(--line); color:var(--text-dim);
+  cursor:pointer; font-family:var(--font-mono); font-size:12.5px; transition:.15s;
+}
+.pg-btn:hover:not(:disabled){border-color:var(--laser); color:var(--laser);}
+.pg-btn.cur{border-color:var(--accent); color:var(--accent);}
+.pg-btn:disabled{opacity:.35; cursor:default;}
