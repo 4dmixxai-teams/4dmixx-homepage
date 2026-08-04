@@ -24,8 +24,11 @@ OUT_DIR = Path(__file__).parent.parent / "assets" / "blog"
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"}
 
 
-def fetch(url: str) -> bytes:
-    req = urllib.request.Request(url, headers=UA)
+def fetch(url: str, referer: str | None = None) -> bytes:
+    headers = dict(UA)
+    if referer:
+        headers["Referer"] = referer
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=20) as r:
         return r.read()
 
@@ -81,12 +84,13 @@ def main():
         img_url = og_image(link)
         if img_url:
             try:
-                raw = fetch(img_url)
+                raw = fetch(img_url, referer=link)
                 im = Image.open(io.BytesIO(raw)).convert("RGB")
                 im.thumbnail((720, 720))
                 img_rel = f"assets/blog/b{i:02d}.jpg"
                 im.save(OUT_DIR / f"b{i:02d}.jpg", "JPEG", quality=80)
             except Exception as e:
+                SYNC_LOG.append(f"img-dl {img_url[:80]}: {type(e).__name__} {e}")
                 print("  이미지 저장 실패:", e)
 
         posts.append({"title": title, "link": link, "date": date,
