@@ -1,0 +1,28 @@
+name: 블로그 작업사례 동기화
+
+on:
+  schedule:
+    - cron: "17 0 * * *"   # 매일 오전 9:17 KST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install Pillow
+      - name: 블로그 동기화
+        run: python scripts/sync_blog.py
+      - name: 변경 시 커밋
+        run: |
+          git config user.name "blog-sync-bot"
+          git config user.email "bot@4dmixx.local"
+          git add assets/blog
+          git diff --cached --quiet || (git commit -m "chore: 블로그 작업사례 자동 동기화" && git push)

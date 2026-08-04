@@ -188,6 +188,32 @@
   </div>
 </section>
 
+<section class="blog-section" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">제작 이야기</div>
+      <h2>블로그 최신 작업기</h2>
+      <p>실제 제작 과정과 뒷이야기를 네이버 블로그에 기록합니다. 카드를 누르면 글로 이동합니다.</p>
+    </div>
+    <div class="blog-grid" id="blogGrid"></div>
+  </div>
+</section>
+
+<script>
+fetch('assets/blog/posts.json').then(r=>r.ok?r.json():[]).then(posts=>{
+  if(!posts.length){ document.querySelector('.blog-section').style.display='none'; return; }
+  document.getElementById('blogGrid').innerHTML = posts.map(p=>`
+    <a class="blog-card" href="${p.link}" target="_blank" rel="noopener">
+      ${p.img?`<div class="blog-thumb" style="background-image:url('${p.img}')"></div>`:''}
+      <div class="blog-body">
+        <span class="blog-date">${p.date}</span>
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+      </div>
+    </a>`).join('');
+}).catch(()=>{ document.querySelector('.blog-section').style.display='none'; });
+</script>
+
 <section class="pf-types">
   <div class="wrap">
     <div class="pf-grid">
