@@ -205,7 +205,7 @@
 <script>
 fetch('assets/blog/posts.json').then(r=>r.ok?r.json():[]).then(posts=>{
   if(!posts.length){ document.querySelector('.blog-section').style.display='none'; return; }
-  document.getElementById('blogGrid').innerHTML = posts.slice(0,10).map(p=>`
+  document.getElementById('blogGrid').innerHTML = posts.map(p=>`
     <a class="blog-card" href="${p.link}" target="_blank" rel="noopener">
       ${p.img?`<div class="blog-thumb" style="background-image:url('${p.img}')"></div>`:''}
       <div class="blog-body">
