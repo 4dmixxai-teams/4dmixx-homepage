@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>4DMIXX — 관리자</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{display:flex;flex-direction:column;min-height:100vh;align-items:center;justify-content:center;background:var(--bg);}
+  .admin-box{width:min(420px,92vw);}
+  .admin-head{display:flex;align-items:center;gap:12px;margin-bottom:26px;}
+  .admin-mark{width:30px;height:30px;border:2px solid var(--accent);}
+  .admin-head h1{font-family:var(--font-display);font-size:18px;letter-spacing:.5px;margin:0;}
+  .admin-head p{font-family:var(--font-mono);font-size:10.5px;color:var(--metal);letter-spacing:1.5px;margin:2px 0 0;}
+
+  /* 게이트 */
+  .gate{background:var(--surface);border:1px solid var(--line);padding:28px;}
+  .gate label{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:8px;}
+  .gate input{
+    width:100%;box-sizing:border-box;padding:13px;background:var(--surface-2);
+    border:1px solid var(--line);color:var(--text);font-family:var(--font-mono);
+    font-size:18px;letter-spacing:6px;text-align:center;outline:none;
+  }
+  .gate input:focus{border-color:var(--accent);}
+  .gate button{
+    width:100%;margin-top:12px;padding:13px;background:var(--accent);border:none;
+    color:#14161A;font-weight:600;font-size:14px;cursor:pointer;
+  }
+  .gate button:disabled{opacity:.4;cursor:not-allowed;}
+  .gate-msg{font-size:12px;color:#d03b3b;margin-top:10px;min-height:16px;text-align:center;}
+
+  /* 런처 */
+  .launcher{display:none;}
+  .sys-btn{
+    display:flex;align-items:center;gap:16px;width:100%;box-sizing:border-box;
+    background:var(--surface);border:1px solid var(--line);padding:20px;
+    margin-bottom:12px;cursor:pointer;text-decoration:none;color:var(--text);
+    transition:border-color .15s, transform .1s;
+  }
+  .sys-btn:hover{border-color:var(--accent);transform:translateX(3px);}
+  .sys-ico{
+    width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);font-family:var(--font-mono);font-size:11px;color:var(--laser);
+    background:var(--surface-2);
+  }
+  .sys-btn b{font-size:15px;display:block;}
+  .sys-btn small{font-size:12px;color:var(--metal);display:block;margin-top:3px;}
+  .sys-arrow{margin-left:auto;color:var(--metal);font-size:18px;}
+  .logout{
+    margin-top:14px;width:100%;padding:11px;background:transparent;
+    border:1px solid var(--line);color:var(--text-dim);cursor:pointer;font-size:12.5px;
+  }
+  .foot-note{font-family:var(--font-mono);font-size:10px;color:var(--metal);text-align:center;margin-top:22px;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="admin-box">
+  <div class="admin-head">
+    <div class="admin-mark"></div>
+    <div>
+      <h1>4DMIXX 관리자</h1>
+      <p>INTERNAL SYSTEMS ONLY</p>
+    </div>
+  </div>
+
+  <!-- 비밀번호 게이트 -->
+  <div class="gate" id="gate">
+    <label for="pw">관리자 비밀번호</label>
+    <input type="password" id="pw" inputmode="numeric" autocomplete="off" maxlength="32">
+    <button id="enterBtn">확인</button>
+    <div class="gate-msg" id="gateMsg"></div>
+  </div>
+
+  <!-- 시스템 런처 -->
+  <div class="launcher" id="launcher">
+    <a class="sys-btn" href="https://bit.ly/4yQuSYk" target="_blank" rel="noopener">
+      <div class="sys-ico">DASH</div>
+      <div><b>관리자 대시보드</b><small>견적 · 작업 · 마케팅 · 알림 통합 현황</small></div>
+      <span class="sys-arrow">→</span>
+    </a>
+    <a class="sys-btn" href="https://fourdmixx-video-pipeline.onrender.com" target="_blank" rel="noopener">
+      <div class="sys-ico">4ZKY</div>
+      <div><b>4ZAKAYA 업로더</b><small>제품 영상 검토 · 유튜브/인스타 업로드</small></div>
+      <span class="sys-arrow">→</span>
+    </a>
+    <a class="sys-btn" href="https://script.google.com/macros/s/AKfycbwZsmeyaEqwOKJFC83UuUfzAIjcNPZEsSZb95jb3VjnpqmfoYbO0dX1ID235KcgP2WIuQ/exec" target="_blank" rel="noopener">
+      <div class="sys-ico">KPI</div>
+      <div><b>연봉관리 시스템</b><small>디자인팀 KPI · 연봉 환산</small></div>
+      <span class="sys-arrow">→</span>
+    </a>
+    <button class="logout" id="logoutBtn">잠금</button>
+  </div>
+
+  <div class="foot-note">각 시스템은 별도 인증이 필요합니다</div>
+</div>
+
+<script>
+(function(){
+  // SHA-256(salt:비밀번호) — 소스에 평문 없음
+  const SALT = '4dmixx-admin-v1';
+  const HASH = 'c8fa7f1d7e6d8668029e943315ccfc8c0b2cee308cdab01f840fcc4ce977b869';
+  const gate = document.getElementById('gate');
+  const launcher = document.getElementById('launcher');
+  const pw = document.getElementById('pw');
+  const btn = document.getElementById('enterBtn');
+  const msg = document.getElementById('gateMsg');
+
+  let fails = parseInt(sessionStorage.getItem('af') || '0');
+
+  async function sha256(str){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function unlock(){
+    gate.style.display = 'none';
+    launcher.style.display = 'block';
+  }
+  function lock(){
+    sessionStorage.removeItem('adm');
+    launcher.style.display = 'none';
+    gate.style.display = 'block';
+    pw.value = '';
+  }
+
+  async function tryEnter(){
+    if(btn.disabled) return;
+    const h = await sha256(SALT + ':' + pw.value);
+    if(h === HASH){
+      sessionStorage.setItem('adm','1');
+      sessionStorage.removeItem('af');
+      msg.textContent = '';
+      unlock();
+    } else {
+      fails++;
+      sessionStorage.setItem('af', fails);
+      // 실패할수록 대기 시간 증가 (무차별 대입 방지)
+      const wait = Math.min(fails * 2, 30);
+      btn.disabled = true;
+      let left = wait;
+      msg.textContent = `비밀번호가 다릅니다 — ${left}초 후 재시도`;
+      const t = setInterval(()=>{
+        left--;
+        if(left <= 0){ clearInterval(t); btn.disabled = false; msg.textContent = ''; }
+        else msg.textContent = `비밀번호가 다릅니다 — ${left}초 후 재시도`;
+      }, 1000);
+      pw.value = '';
+    }
+  }
+
+  btn.addEventListener('click', tryEnter);
+  pw.addEventListener('keydown', e => { if(e.key === 'Enter') tryEnter(); });
+  document.getElementById('logoutBtn').addEventListener('click', lock);
+
+  // 같은 탭 세션 내 재방문 시 유지
+  if(sessionStorage.getItem('adm') === '1') unlock();
+  else pw.focus();
+})();
+</script>
+</body>
+</html>
