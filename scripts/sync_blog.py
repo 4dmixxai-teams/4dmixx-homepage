@@ -20,6 +20,9 @@ from PIL import Image
 BLOG_ID = "4dmixx"
 RSS_URL = f"https://rss.blog.naver.com/{BLOG_ID}.xml"
 MAX_POSTS = 12
+FETCH_POSTS = 40  # 필터 후 12개를 채우기 위해 넉넉히 조회
+INCLUDE_KW = ["디오라마", "모형", "시제품", "전시"]
+EXCLUDE_KW = ["이슈"]
 OUT_DIR = Path(__file__).parent.parent / "assets" / "blog"
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"}
 
@@ -66,8 +69,18 @@ def main():
 
     rss = fetch(RSS_URL)
     root = ET.fromstring(rss)
-    items = root.findall(".//item")[:MAX_POSTS]
-    print(f"RSS 글 {len(items)}개")
+    all_items = root.findall(".//item")[:FETCH_POSTS]
+    items = []
+    for it in all_items:
+        t = (it.findtext("title") or "")
+        if any(k in t for k in EXCLUDE_KW):
+            continue
+        if not any(k in t for k in INCLUDE_KW):
+            continue
+        items.append(it)
+        if len(items) >= MAX_POSTS:
+            break
+    print(f"RSS {len(all_items)}개 중 필터 통과 {len(items)}개")
 
     posts = []
     for i, item in enumerate(items):
