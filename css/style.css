@@ -394,3 +394,108 @@ footer nav a:hover{ color:var(--text); }
   h1{ font-size:32px; }
   .hero{ padding:64px 0 48px; }
 }
+
+/* ══════════ AI3D 홍보 섹션 ══════════ */
+.ai3d-band{
+  background:linear-gradient(135deg, var(--surface) 0%, #1a2028 100%);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  position:relative;
+  overflow:hidden;
+}
+.ai3d-band::before{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 80% 50%, rgba(0,217,255,.06), transparent 60%);
+  pointer-events:none;
+}
+.ai3d-grid{
+  display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center;
+  padding:72px 0;
+}
+.ai3d-steps{
+  display:flex; gap:0; margin:26px 0 30px; flex-wrap:wrap;
+}
+.ai3d-step{
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--text-dim);
+  padding:8px 14px; border:1px solid var(--line); background:var(--surface-2);
+  margin-right:-1px;
+}
+.ai3d-step .stepno{
+  font-family:var(--font-mono); font-size:10.5px; color:var(--laser);
+}
+
+/* 2D→3D 모프 비주얼 */
+.morph-stage{
+  display:flex; align-items:center; justify-content:center; gap:26px;
+  padding:30px 0;
+}
+.morph-photo, .morph-cube{
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+}
+.morph-label{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; color:var(--metal);
+}
+.photo-frame{
+  width:96px; height:96px; border:2px solid var(--metal);
+  background:
+    linear-gradient(45deg, transparent 48%, var(--metal) 49%, var(--metal) 51%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, var(--metal) 49%, var(--metal) 51%, transparent 52%),
+    var(--surface-2);
+  position:relative;
+}
+.photo-frame::after{
+  content:""; position:absolute; top:12px; left:12px; width:22px; height:22px;
+  border-radius:50%; border:2px solid var(--metal);
+}
+.morph-arrow{display:flex; flex-direction:column; align-items:center; gap:8px;}
+.ai-chip{
+  font-family:var(--font-mono); font-size:11px; font-weight:600; color:#14161A;
+  background:var(--laser); padding:4px 10px;
+  animation:ai-pulse 2s ease-in-out infinite;
+}
+@keyframes ai-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,217,255,.5);}
+  50%{box-shadow:0 0 0 9px rgba(0,217,255,0);}
+}
+.arrow-line{
+  width:64px; height:2px;
+  background:repeating-linear-gradient(90deg, var(--laser) 0 8px, transparent 8px 14px);
+  position:relative;
+  animation:arrow-flow 1s linear infinite;
+  background-size:14px 2px;
+}
+@keyframes arrow-flow{to{background-position:14px 0;}}
+.arrow-line::after{
+  content:""; position:absolute; right:-2px; top:-4px;
+  border-left:8px solid var(--laser); border-top:5px solid transparent; border-bottom:5px solid transparent;
+}
+.cube{
+  width:96px; height:96px; position:relative;
+  transform-style:preserve-3d;
+  animation:cube-spin 9s linear infinite;
+}
+@keyframes cube-spin{
+  from{transform:rotateX(-22deg) rotateY(0);}
+  to{transform:rotateX(-22deg) rotateY(360deg);}
+}
+.cube .face{
+  position:absolute; width:96px; height:96px;
+  border:1.5px solid var(--laser);
+  background:rgba(0,217,255,.06);
+}
+.cube .f1{transform:translateZ(48px);}
+.cube .f2{transform:rotateY(90deg) translateZ(48px);}
+.cube .f3{transform:rotateX(90deg) translateZ(48px);}
+
+@media (max-width:860px){
+  .ai3d-grid{grid-template-columns:1fr; gap:20px; padding:52px 0;}
+  .ai3d-visual{order:-1;}
+  .morph-stage{gap:16px; padding:10px 0;}
+  .photo-frame,.cube,.cube .face{width:72px; height:72px;}
+  .cube .f1{transform:translateZ(36px);}
+  .cube .f2{transform:rotateY(90deg) translateZ(36px);}
+  .cube .f3{transform:rotateX(90deg) translateZ(36px);}
+  .arrow-line{width:36px;}
+  .ai3d-step{font-size:12px; padding:7px 10px;}
+}
