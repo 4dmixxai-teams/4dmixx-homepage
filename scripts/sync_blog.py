@@ -31,13 +31,21 @@ def fetch(url: str) -> bytes:
 
 
 def og_image(post_url: str) -> str | None:
-    """글 페이지에서 대표 이미지(og:image) 추출"""
+    """글 페이지에서 대표 이미지(og:image) 추출 — 모바일 페이지 사용(iframe 없음)"""
     try:
-        html = fetch(post_url).decode("utf-8", "ignore")
-        m = re.search(r'property="og:image"\s+content="([^"]+)"', html)
+        mobile = post_url.replace("blog.naver.com", "m.blog.naver.com")
+        html = fetch(mobile).decode("utf-8", "ignore")
+        m = re.search(r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)', html)
         if not m:
-            m = re.search(r'content="([^"]+)"\s+property="og:image"', html)
-        return m.group(1).replace("&amp;", "&") if m else None
+            m = re.search(r'content=["\']([^"\']+)["\'][^>]*property=["\']og:image', html)
+        if not m:  # 본문 첫 이미지 폴백
+            m = re.search(r'(https://postfiles\.pstatic\.net/[^"\'\s]+)', html)
+        if not m:
+            return None
+        url = m.group(1).replace("&amp;", "&")
+        # 고해상도 파라미터로 교체
+        url = re.sub(r"\?type=w\d+", "?type=w773", url)
+        return url
     except Exception as e:
         print("  og:image 실패:", e)
         return None
